@@ -59,6 +59,7 @@ template <class T> Vector<T>::Vector(size_t n) : m_n(n), m_data(new T[n]) {}
 
 template <class T>
 Vector<T>::Vector(size_t n, const T &a) : m_n(n), m_data(new T[n]) {
+#pragma omp parallel for
   for (size_t i = 0; i < n; ++i) {
     m_data[i] = a[i];
   }
@@ -66,6 +67,7 @@ Vector<T>::Vector(size_t n, const T &a) : m_n(n), m_data(new T[n]) {
 
 template <class T>
 Vector<T>::Vector(size_t n, const T *a) : m_n(n), m_data(new T[n]) {
+#pragma omp parallel for
   for (size_t i = 0; i < n; ++i) {
     m_data[i] = a[i];
   }
@@ -73,6 +75,7 @@ Vector<T>::Vector(size_t n, const T *a) : m_n(n), m_data(new T[n]) {
 
 template <class T>
 Vector<T>::Vector(const Vector &rhs) : m_n(rhs.m_n), m_data(new T[rhs.m_n]) {
+#pragma omp parallel for
   for (size_t i = 0; i < rhs.m_n; ++i) {
     m_data[i] = rhs.m_data[i];
   }
@@ -80,6 +83,8 @@ Vector<T>::Vector(const Vector &rhs) : m_n(rhs.m_n), m_data(new T[rhs.m_n]) {
 
 template <class T> Vector<T> &Vector<T>::operator=(const Vector<T> &rhs) {
   m_n = rhs.m_n;
+
+#pragma omp parallel for
   for (size_t i = 0; i < rhs.m_n; ++i) {
     m_data[i] = rhs.m_data[i];
   }
@@ -147,6 +152,7 @@ template <class T> struct Matrix {
   Vector<T> row(const size_t i) const;
   Vector<T> col(const size_t i) const;
   Vector<T> diag() const;
+  Matrix<T> transpose() const;
 
   void push(std::initializer_list<T> values);
 
@@ -179,8 +185,9 @@ Matrix<T>::Matrix(size_t rows, size_t cols, T **a)
     m_data[i] = m_data[i - 1] + m_rows;
   }
 
+#pragma omp parallel for
   for (size_t i = 0; i < m_rows; i++) {
-    for (size_t j = 0; j < m_rows; j++) {
+    for (size_t j = 0; j < m_cols; j++) {
       m_data[i][j] = a[i][j];
     }
   }
@@ -199,8 +206,9 @@ Matrix<T>::Matrix(size_t rows, size_t cols, T &&a)
     m_data[i] = m_data[i - 1] + m_rows;
   }
 
+#pragma omp parallel for
   for (size_t i = 0; i < m_rows; i++) {
-    for (size_t j = 0; j < m_rows; j++) {
+    for (size_t j = 0; j < m_cols; j++) {
       m_data[i][j] = a[i][j];
     }
   }
@@ -214,8 +222,9 @@ Matrix<T>::Matrix(const Matrix &rhs) : m_rows(rhs.m_rows), m_cols(rhs.m_cols) {
     m_data[i] = m_data[i - 1] + m_rows;
   }
 
+#pragma omp parallel for
   for (size_t i = 0; i < m_rows; i++) {
-    for (size_t j = 0; j < m_rows; j++) {
+    for (size_t j = 0; j < m_cols; j++) {
       m_data[i][j] = rhs[i][j];
     }
   }
@@ -231,8 +240,9 @@ template <class T> Matrix<T> &Matrix<T>::operator=(const Matrix &rhs) {
     m_data[i] = m_data[i - 1] + m_rows;
   }
 
+#pragma omp parallel for
   for (size_t i = 0; i < m_rows; i++) {
-    for (size_t j = 0; j < m_rows; j++) {
+    for (size_t j = 0; j < m_cols; j++) {
       m_data[i][j] = rhs[i][j];
     }
   }
@@ -288,6 +298,17 @@ template <class T> Vector<T> Matrix<T>::diag() const {
   Vector<T> result(m_rows, data);
   delete[] data;
   return result;
+}
+
+template <class T> Matrix<T> Matrix<T>::transpose() const {
+  Matrix<T> result(m_cols, m_rows);
+
+#pragma omp parallel for
+  for (size_t i = 0; i < m_rows; ++i) {
+    for (size_t j = 0; j < m_cols; ++j) {
+      result[j][i] = m_data[i][j];
+    }
+  }
 }
 
 template <class T> void Matrix<T>::push(std::initializer_list<T> values) {
