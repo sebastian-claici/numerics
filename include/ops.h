@@ -1,4 +1,25 @@
 #include "core.h"
+#include <random>
+
+inline Vector<double> rand(size_t n) {
+  std::random_device rnd_device;
+  std::mt19937 mersenne_engine{rnd_device()};
+  std::uniform_real_distribution<double> dist;
+
+  auto gen = [&]() { return dist(mersenne_engine); };
+
+  return Vector<double>(n, gen);
+}
+
+inline Matrix<double> rand(size_t rows, size_t cols) {
+  std::random_device rnd_device;
+  std::mt19937 mersenne_engine{rnd_device()};
+  std::uniform_real_distribution<double> dist;
+
+  auto gen = [&]() { return dist(mersenne_engine); };
+
+  return Matrix<double>(rows, cols, gen);
+}
 
 template <class T> T dot(const Vector<T> &a, const Vector<T> &b) {
   if (a.m_n != b.m_n) {
