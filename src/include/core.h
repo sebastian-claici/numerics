@@ -1,4 +1,6 @@
-#include <cstddef>
+#ifndef CORE_H_
+#define CORE_H_
+
 #include <initializer_list>
 #include <ostream>
 
@@ -307,3 +309,5 @@ template <class T> Matrix<T>::~Matrix() {
   delete[] m_data[0];
   delete[] m_data;
 }
+
+#endif // CORE_H_
