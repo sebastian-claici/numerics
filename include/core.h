@@ -1,6 +1,7 @@
 #ifndef CORE_H_
 #define CORE_H_
 
+#include <algorithm>
 #include <initializer_list>
 #include <ostream>
 #include <vector>
@@ -14,6 +15,8 @@ template <class T> struct Vector {
   Vector(size_t n, const T *a);
   Vector(const Vector &rhs);
   Vector(std::initializer_list<T> il);
+  template <typename F> Vector(size_t n, F &lambda);
+
   Vector &operator=(const Vector &rhs);
 
   friend std::ostream &operator<<(std::ostream &stream,
@@ -71,6 +74,12 @@ Vector<T>::Vector(const Vector &rhs) : m_n(rhs.m_n), m_data(rhs.m_data) {}
 template <class T>
 Vector<T>::Vector(std::initializer_list<T> il) : m_n(il.size()), m_data(il) {}
 
+template <class T>
+template <typename F>
+Vector<T>::Vector(size_t n, F &lambda) : m_n(n), m_data(std::vector<T>(n)) {
+  std::generate(m_data.begin(), m_data.end(), lambda);
+}
+
 template <class T> Vector<T> &Vector<T>::operator=(const Vector<T> &rhs) {
   m_n = rhs.m_n;
   m_data.resize(m_n);
@@ -118,6 +127,8 @@ template <class T> struct Matrix {
   Matrix(size_t rows, size_t cols, T **a);
   Matrix(const Matrix &rhs);
   Matrix(std::initializer_list<std::initializer_list<T>> il);
+  template <typename F> Matrix(size_t rows, size_t cols, F &lambda);
+
   Matrix &operator=(const Matrix &rhs);
 
   friend std::ostream &operator<<(std::ostream &stream,
@@ -200,9 +211,22 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> il)
     }
   }
 
-  m_data = std::vector<std::vector<T>>(m_rows);
+  m_data = std::vector<std::vector<T>>(m_rows, std::vector<T>(m_cols));
+  size_t i = 0;
   for (const auto &row : il) {
-    m_data.push_back(row);
+    m_data[i++] = row;
+  }
+}
+
+template <class T>
+template <typename F>
+Matrix<T>::Matrix(size_t rows, size_t cols, F &lambda)
+    : m_rows(rows), m_cols(cols),
+      m_data(std::vector<std::vector<T>>(m_rows, std::vector<T>(m_cols))) {
+
+#pragma omp parallel for
+  for (size_t i = 0; i < m_rows; ++i) {
+    std::generate(m_data[i].begin(), m_data[i].end(), lambda);
   }
 }
 
