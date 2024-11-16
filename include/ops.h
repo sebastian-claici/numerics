@@ -20,7 +20,7 @@ template <class T> Vector<T> matmul(const Matrix<T> &A, const Vector<T> &v) {
     std::runtime_error("Dimensions are incompatible");
   }
 
-  Vector<T> result(A.m_rows, 0);
+  Vector<T> result(A.m_rows, 0.0);
 
 #pragma omp parallel for
   for (size_t i = 0; i < A.m_rows; ++i) {
@@ -39,7 +39,7 @@ template <class T> Matrix<T> matmul(const Matrix<T> &A, const Matrix<T> &B) {
   // transpose B for contiguous mem access
   auto Bt = B.transpose();
 
-  Matrix<T> result(A.m_rows, B.m_cols, 0);
+  Matrix<T> result(A.m_rows, B.m_cols, 0.0);
 
 #pragma omp parallel for
   for (size_t i = 0; i < A.m_rows; ++i) {
