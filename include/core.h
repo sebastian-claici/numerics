@@ -12,6 +12,7 @@ template <class T> struct Vector {
   Vector(size_t n, const T &a);
   Vector(size_t n, const T *a);
   Vector(const Vector &rhs);
+  Vector(std::initializer_list<T> il);
   Vector &operator=(const Vector &rhs);
 
   friend std::ostream &operator<<(std::ostream &stream,
@@ -81,6 +82,16 @@ Vector<T>::Vector(const Vector &rhs) : m_n(rhs.m_n), m_data(new T[rhs.m_n]) {
   }
 }
 
+template <class T>
+Vector<T>::Vector(std::initializer_list<T> il)
+    : m_n(il.size()), m_data(new T[il.size()]) {
+
+#pragma omp parallel for
+  for (size_t i = 0; i < il.size(); ++i) {
+    m_data[i] = il[i];
+  }
+}
+
 template <class T> Vector<T> &Vector<T>::operator=(const Vector<T> &rhs) {
   m_n = rhs.m_n;
 
@@ -126,6 +137,7 @@ template <class T> struct Matrix {
   Matrix(size_t rows, size_t cols, T &&a);
   Matrix(size_t rows, size_t cols, T **a);
   Matrix(const Matrix &rhs);
+  Matrix(std::initializer_list<std::initializer_list<T>> il);
   Matrix &operator=(const Matrix &rhs);
 
   friend std::ostream &operator<<(std::ostream &stream,
@@ -226,6 +238,30 @@ Matrix<T>::Matrix(const Matrix &rhs) : m_rows(rhs.m_rows), m_cols(rhs.m_cols) {
   for (size_t i = 0; i < m_rows; i++) {
     for (size_t j = 0; j < m_cols; j++) {
       m_data[i][j] = rhs[i][j];
+    }
+  }
+}
+
+template <class T>
+Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> il)
+    : m_rows(il.size()), m_cols(il.begin()->size()) {
+  for (const auto &row : il) {
+    if (row.size() != m_cols) {
+      throw std::invalid_argument(
+          "All rows must have the same number of columns.");
+    }
+  }
+
+  m_data = new T *[m_rows];
+  m_data[0] = new T[m_rows * m_cols];
+  for (size_t i = 1; i < m_cols; ++i) {
+    m_data[i] = m_data[i - 1] + m_rows;
+  }
+
+#pragma omp parallel for
+  for (size_t i = 0; i < il.size(); ++i) {
+    for (size_t j = 0; j < il[i].size(); ++j) {
+      m_data[i] = il[i][j];
     }
   }
 }
