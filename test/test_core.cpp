@@ -1,10 +1,8 @@
-#define CATCH_CONFIG_MAIN
-
 #include "core.h"
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("Vector indexing", "") {
+TEST_CASE("Vector indexing", "[vector]") {
   Vector<int> v1{1, 2, 3};
 
   REQUIRE(v1[0] == 1);
@@ -12,7 +10,7 @@ TEST_CASE("Vector indexing", "") {
   REQUIRE(v1[2] == 3);
 }
 
-TEST_CASE("Matrix indexing", "") {
+TEST_CASE("Matrix indexing", "[vector]") {
   Matrix<int> A1{{1, 2}, {3, 4}};
 
   REQUIRE(A1[0][0] == 1);
@@ -21,7 +19,7 @@ TEST_CASE("Matrix indexing", "") {
   REQUIRE(A1[1][1] == 4);
 }
 
-TEST_CASE("Vector equality operator", "") {
+TEST_CASE("Vector equality operator", "[matrix]") {
   Vector<int> v1{1, 2, 3};
   Vector<int> v2{1, 2, 3};
   Vector<int> v3{1, 2, 4};
@@ -30,7 +28,7 @@ TEST_CASE("Vector equality operator", "") {
   REQUIRE(v1 != v3);
 }
 
-TEST_CASE("Matrix equality operator", "") {
+TEST_CASE("Matrix equality operator", "[matrix]") {
   Matrix<int> A1{{1, 2}, {3, 4}};
   Matrix<int> A2{{1, 2}, {3, 4}};
   Matrix<int> A3{{1, 2}, {5, 6}};
