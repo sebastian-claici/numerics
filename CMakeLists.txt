@@ -35,12 +35,14 @@ FetchContent_MakeAvailable(Catch2)
 
 add_executable(test_core test/test_core.cpp)
 target_link_libraries(test_core PRIVATE Catch2::Catch2WithMain)
-
 add_executable(test_ops test/test_ops.cpp)
 target_link_libraries(test_ops PRIVATE Catch2::Catch2WithMain)
+add_executable(test_linalg test/test_linalg.cpp)
+target_link_libraries(test_linalg PRIVATE Catch2::Catch2WithMain)
 
 include(CTest)
 include(Catch)
 
 catch_discover_tests(test_core)
 catch_discover_tests(test_ops)
+catch_discover_tests(test_linalg)
