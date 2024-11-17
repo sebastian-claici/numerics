@@ -5,7 +5,7 @@
 #include <cmath>
 
 struct Cholesky {
-  int n;
+  size_t n;
   Matrix<double> L;
 
   Cholesky(const Matrix<double> &A) : n(A.m_rows), L(A.m_rows, A.m_cols, 0.0) {
