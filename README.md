@@ -3,5 +3,6 @@
 Working my way through the third edition of [Numerical Recipes](https://numerical.recipes/).
 
 Current focus: Matrix decomposition methods, including:
-- [ ] Cholesky decomposition
+- [X] Cholesky decomposition
 - [ ] QR decomposition
+- [ ] Forward and backward substitution methods
