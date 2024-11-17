@@ -1,4 +1,5 @@
 #include "core.h"
+
 #include <random>
 
 inline Vector<double> rand(size_t n) {
