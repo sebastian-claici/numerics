@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_MAIN
-
 #include "ops.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -24,7 +22,9 @@ TEST_CASE("Matrix-vector multiplication", "[matmul]") {
   REQUIRE_THAT(result[0], WithinRel(14.0));
   REQUIRE_THAT(result[1], WithinRel(32.0));
   REQUIRE_THAT(result[2], WithinRel(50.0));
+}
 
+TEST_CASE("Benchmark matrix-vector multiplication", "[matmul][!benchmark]") {
   const size_t n = 1000;
   Matrix<double> rM = rand(n, n);
   Vector<double> rv = rand(n);
@@ -45,7 +45,9 @@ TEST_CASE("Matrix-matrix multiplication", "[matmul]") {
   REQUIRE_THAT(result[0][1], WithinRel(22.0));
   REQUIRE_THAT(result[1][0], WithinRel(43.0));
   REQUIRE_THAT(result[1][1], WithinRel(50.0));
+}
 
+TEST_CASE("Benchmark matrix-matrix multiplication", "[matmul][!benchmark]") {
   const size_t n = 1000;
   Matrix<double> rA = rand(n, n);
   Matrix<double> rB = rand(n, n);

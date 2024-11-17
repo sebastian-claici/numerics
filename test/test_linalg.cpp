@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_MAIN
-
 #include "linalg/cholesky.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -8,7 +6,7 @@
 
 using Catch::Matchers::WithinRel;
 
-TEST_CASE("Cholesky decomposition", "") {
+TEST_CASE("Cholesky decomposition", "[decomposition]") {
   Matrix<double> A{
       {4.0, 12.0, -16.0}, {12.0, 37.0, -43.0}, {-16.0, -43.0, 98.0}};
 
