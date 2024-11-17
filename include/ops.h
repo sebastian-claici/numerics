@@ -28,8 +28,6 @@ template <class T> T dot(const Vector<T> &a, const Vector<T> &b) {
   }
 
   T result = a[0] * b[0];
-
-#pragma omp parallel for
   for (size_t i = 1; i < a.m_n; ++i) {
     result += a[i] * b[i];
   }
