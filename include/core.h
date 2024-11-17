@@ -19,6 +19,8 @@ template <class T> struct Vector {
 
   Vector &operator=(const Vector &rhs);
 
+  bool operator==(const Vector &rhs) const;
+
   friend std::ostream &operator<<(std::ostream &stream,
                                   const Vector<T> &vector) {
     stream << "[";
@@ -90,6 +92,19 @@ template <class T> Vector<T> &Vector<T>::operator=(const Vector<T> &rhs) {
   }
 }
 
+template <class T> bool Vector<T>::operator==(const Vector<T> &rhs) const {
+  if (rhs.m_n != m_n) {
+    return false;
+  }
+  for (size_t i = 0; i < m_n; ++i) {
+    if (rhs.m_data[i] != m_data[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 template <class T> inline T &Vector<T>::operator[](size_t i) {
   if (i >= m_n) {
     throw std::runtime_error("Out of bounds");
@@ -130,6 +145,8 @@ template <class T> struct Matrix {
   template <typename F> Matrix(size_t rows, size_t cols, F &lambda);
 
   Matrix &operator=(const Matrix &rhs);
+
+  bool operator==(const Matrix &rhs) const;
 
   friend std::ostream &operator<<(std::ostream &stream,
                                   const Matrix<T> &matrix) {
@@ -234,6 +251,21 @@ template <class T> Matrix<T> &Matrix<T>::operator=(const Matrix &rhs) {
   m_rows = rhs.m_rows;
   m_cols = rhs.m_cols;
   m_data = std::vector<std::vector<T>>(rhs.m_data);
+}
+
+template <class T> bool Matrix<T>::operator==(const Matrix<T> &rhs) const {
+  if (rhs.m_rows != m_rows || rhs.m_cols != m_cols) {
+    return false;
+  }
+  for (size_t i = 0; i < m_rows; ++i) {
+    for (size_t j = 0; j < m_cols; ++j) {
+      if (rhs.m_data[i][j] != m_data[i][j]) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 template <class T>
