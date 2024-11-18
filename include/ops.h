@@ -59,13 +59,17 @@ template <class T> Matrix<T> matmul(const Matrix<T> &A, const Matrix<T> &B) {
     std::runtime_error("Dimensions are incompatible");
   }
 
-  Matrix<T> result(A.m_rows, B.m_cols, 0.0);
+  size_t m = A.m_rows;
+  size_t p = A.m_cols;
+  size_t n = B.m_cols;
+
+  Matrix<T> result(m, n, 0.0);
 
 #pragma omp parallel for
-  for (size_t i = 0; i < A.m_rows; ++i) {
-    for (size_t j = 0; j < A.m_cols; ++j) {
-      for (size_t k = 0; k < B.m_cols; ++k) {
-        result(i, k) += A(i, j) * B(j, k);
+  for (size_t i = 0; i < m; ++i) {
+    for (size_t k = 0; k < p; ++k) {
+      for (size_t j = 0; j < n; ++j) {
+        result.m_data[i * m + j] += A.m_data[i * m + k] * B.m_data[k * p + j];
       }
     }
   }
