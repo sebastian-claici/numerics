@@ -4,7 +4,7 @@ project(Numerical_Recipes)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "-Wall -Wno-reorder")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -ffast-math")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories(include)

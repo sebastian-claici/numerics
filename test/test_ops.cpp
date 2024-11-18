@@ -48,7 +48,7 @@ TEST_CASE("Matrix-matrix multiplication", "[matmul]") {
 }
 
 TEST_CASE("Benchmark matrix-matrix multiplication", "[matmul][!benchmark]") {
-  const size_t n = 1000;
+  const size_t n = 1024;
   Matrix<double> rA = rand(n, n);
   Matrix<double> rB = rand(n, n);
 
