@@ -58,19 +58,15 @@ template <class T> Matrix<T> matmul(const Matrix<T> &A, const Matrix<T> &B) {
   if (A.m_cols != B.m_rows) {
     std::runtime_error("Dimensions are incompatible");
   }
-  // transpose B for contiguous mem access
-  auto Bt = B.transpose();
 
   Matrix<T> result(A.m_rows, B.m_cols, 0.0);
 
 #pragma omp parallel for
   for (size_t i = 0; i < A.m_rows; ++i) {
-    for (size_t k = 0; k < B.m_cols; ++k) {
-      T val = result[i][k];
-      for (size_t j = 0; j < A.m_cols; ++j) {
-        val += A[i][j] * Bt[k][j];
+    for (size_t j = 0; j < A.m_cols; ++j) {
+      for (size_t k = 0; k < B.m_cols; ++k) {
+        result[i][k] += A[i][j] * B[j][k];
       }
-      result[i][k] = val;
     }
   }
 
