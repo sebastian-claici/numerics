@@ -47,7 +47,7 @@ template <class T> Vector<T> matmul(const Matrix<T> &A, const Vector<T> &v) {
 #pragma omp parallel for
   for (size_t i = 0; i < A.m_rows; ++i) {
     for (size_t j = 0; j < A.m_cols; ++j) {
-      result[i] += A[i][j] * v[j];
+      result[i] += A(i, j) * v[j];
     }
   }
 
@@ -59,18 +59,13 @@ template <class T> Matrix<T> matmul(const Matrix<T> &A, const Matrix<T> &B) {
     std::runtime_error("Dimensions are incompatible");
   }
 
-  // TODO: This needs to be grid searched for each CPU
-  const size_t tile_size = 64;
-
   Matrix<T> result(A.m_rows, B.m_cols, 0.0);
-  for (size_t tile = 0; tile < A.m_cols; tile += tile_size) {
+
 #pragma omp parallel for
-    for (size_t i = 0; i < A.m_rows; ++i) {
-      size_t tile_end = std::min(A.m_cols, tile + tile_size);
-      for (size_t j = tile; j < tile_end; ++j) {
-        for (size_t k = 0; k < B.m_cols; ++k) {
-          result[i][k] += A[i][j] * B[j][k];
-        }
+  for (size_t i = 0; i < A.m_rows; ++i) {
+    for (size_t j = 0; j < A.m_cols; ++j) {
+      for (size_t k = 0; k < B.m_cols; ++k) {
+        result(i, k) += A(i, j) * B(j, k);
       }
     }
   }

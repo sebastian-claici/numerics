@@ -41,10 +41,10 @@ TEST_CASE("Matrix-matrix multiplication", "[matmul]") {
   REQUIRE(result.m_rows == A.m_rows);
   REQUIRE(result.m_cols == B.m_cols);
 
-  REQUIRE_THAT(result[0][0], WithinRel(19.0));
-  REQUIRE_THAT(result[0][1], WithinRel(22.0));
-  REQUIRE_THAT(result[1][0], WithinRel(43.0));
-  REQUIRE_THAT(result[1][1], WithinRel(50.0));
+  REQUIRE_THAT(result(0, 0), WithinRel(19.0));
+  REQUIRE_THAT(result(0, 1), WithinRel(22.0));
+  REQUIRE_THAT(result(1, 0), WithinRel(43.0));
+  REQUIRE_THAT(result(1, 1), WithinRel(50.0));
 }
 
 TEST_CASE("Benchmark matrix-matrix multiplication", "[matmul][!benchmark]") {

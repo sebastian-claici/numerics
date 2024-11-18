@@ -135,11 +135,10 @@ template <class T> Vector<T>::~Vector() {}
 
 template <class T> struct Matrix {
   size_t m_rows, m_cols;
-  std::vector<std::vector<T>> m_data;
+  std::vector<T> m_data;
 
   explicit Matrix(size_t rows, size_t cols);
   explicit Matrix(size_t rows, size_t cols, const T &a);
-  Matrix(size_t rows, size_t cols, T **a);
   Matrix(const Matrix &rhs);
   Matrix(std::initializer_list<std::initializer_list<T>> il);
   template <typename F> Matrix(size_t rows, size_t cols, F &lambda);
@@ -154,7 +153,7 @@ template <class T> struct Matrix {
     for (size_t i = 0; i < matrix.m_rows; ++i) {
       i == 0 ? stream << "[" : stream << " [";
       for (size_t j = 0; j < matrix.m_cols; ++j) {
-        stream << matrix[i][j];
+        stream << matrix(i, j);
         if (j < matrix.m_cols - 1) {
           stream << ", ";
         }
@@ -166,8 +165,8 @@ template <class T> struct Matrix {
     return stream;
   }
 
-  inline std::vector<T> &operator[](const size_t i);
-  inline const std::vector<T> &operator[](const size_t i) const;
+  inline T &operator()(const size_t i, const size_t j);
+  inline const T &operator()(const size_t i, const size_t j) const;
 
   Vector<T> row(const size_t i) const;
   Vector<T> col(const size_t i) const;
@@ -181,8 +180,7 @@ template <class T> struct Matrix {
 
 template <class T>
 Matrix<T>::Matrix(size_t rows, size_t cols)
-    : m_rows(rows), m_cols(cols),
-      m_data(std::vector<std::vector<T>>(m_rows, std::vector<T>(m_cols))) {
+    : m_rows(rows), m_cols(cols), m_data(std::vector<T>(m_rows * m_cols)) {
   if (rows == 0 || cols == 0) {
     throw std::runtime_error("Matrix cannot have 0 dimension.");
   }
@@ -190,27 +188,9 @@ Matrix<T>::Matrix(size_t rows, size_t cols)
 
 template <class T>
 Matrix<T>::Matrix(size_t rows, size_t cols, const T &a)
-    : m_rows(rows), m_cols(cols),
-      m_data(std::vector<std::vector<T>>(m_rows, std::vector<T>(m_cols, a))) {
+    : m_rows(rows), m_cols(cols), m_data(std::vector<T>(m_rows * m_cols)) {
   if (rows == 0 || cols == 0) {
     throw std::runtime_error("Matrix cannot have 0 dimension.");
-  }
-}
-
-template <class T>
-Matrix<T>::Matrix(size_t rows, size_t cols, T **a)
-    : m_rows(rows), m_cols(cols), m_data(a) {
-  if (rows == 0 || cols == 0) {
-    throw std::runtime_error("Matrix cannot have 0 dimension.");
-  }
-
-  if (m_data.size() != m_rows) {
-    throw std::invalid_argument("Invalid number of rows in input data.");
-  }
-  for (auto row : m_data) {
-    if (row.size() != m_cols) {
-      throw std::invalid_argument("Invalid number of cols in input data.");
-    }
   }
 }
 
@@ -228,40 +208,36 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> il)
     }
   }
 
-  m_data = std::vector<std::vector<T>>(m_rows, std::vector<T>(m_cols));
+  m_data = std::vector<T>(m_rows * m_cols);
   size_t i = 0;
   for (const auto &row : il) {
-    m_data[i++] = row;
+    for (const T &x : row) {
+      m_data[i++] = x;
+    }
   }
 }
 
 template <class T>
 template <typename F>
 Matrix<T>::Matrix(size_t rows, size_t cols, F &lambda)
-    : m_rows(rows), m_cols(cols),
-      m_data(std::vector<std::vector<T>>(m_rows, std::vector<T>(m_cols))) {
+    : m_rows(rows), m_cols(cols), m_data(std::vector<T>(m_rows * m_cols)) {
 
-#pragma omp parallel for
-  for (size_t i = 0; i < m_rows; ++i) {
-    std::generate(m_data[i].begin(), m_data[i].end(), lambda);
-  }
+  std::generate(m_data.begin(), m_data.end(), lambda);
 }
 
 template <class T> Matrix<T> &Matrix<T>::operator=(const Matrix &rhs) {
   m_rows = rhs.m_rows;
   m_cols = rhs.m_cols;
-  m_data = std::vector<std::vector<T>>(rhs.m_data);
+  m_data = std::vector<T>(rhs.m_data);
 }
 
 template <class T> bool Matrix<T>::operator==(const Matrix<T> &rhs) const {
   if (rhs.m_rows != m_rows || rhs.m_cols != m_cols) {
     return false;
   }
-  for (size_t i = 0; i < m_rows; ++i) {
-    for (size_t j = 0; j < m_cols; ++j) {
-      if (rhs.m_data[i][j] != m_data[i][j]) {
-        return false;
-      }
+  for (size_t i = 0; i < m_rows * m_cols; ++i) {
+    if (rhs.m_data[i] != m_data[i]) {
+      return false;
     }
   }
 
@@ -269,20 +245,20 @@ template <class T> bool Matrix<T>::operator==(const Matrix<T> &rhs) const {
 }
 
 template <class T>
-inline std::vector<T> &Matrix<T>::operator[](const size_t i) {
-  if (i >= m_rows) {
+inline T &Matrix<T>::operator()(const size_t i, const size_t j) {
+  if (i >= m_rows || j >= m_cols) {
     throw std::runtime_error("Out of bounds.");
   }
 
-  return m_data[i];
+  return m_data[i * m_cols + j];
 }
 
 template <class T>
-inline const std::vector<T> &Matrix<T>::operator[](const size_t i) const {
-  if (i >= m_rows) {
+inline const T &Matrix<T>::operator()(const size_t i, const size_t j) const {
+  if (i >= m_rows || j >= m_cols) {
     throw std::runtime_error("Out of bounds");
   }
-  return m_data[i];
+  return m_data[i * m_cols + j];
 }
 
 template <class T> Vector<T> Matrix<T>::row(const size_t i) const {
@@ -327,7 +303,7 @@ template <class T> Matrix<T> Matrix<T>::transpose() const {
 #pragma omp parallel for
   for (size_t i = 0; i < m_rows; ++i) {
     for (size_t j = 0; j < m_cols; ++j) {
-      result[j][i] = m_data[i][j];
+      result[j * m_rows + i] = m_data[i * m_cols + j];
     }
   }
 
@@ -341,11 +317,7 @@ template <class T> void Matrix<T>::push(std::initializer_list<T> values) {
     if (idx >= m_rows * m_cols) {
       throw std::runtime_error("Too many values to add to matrix.");
     }
-
-    size_t idx_row = idx / m_cols;
-    size_t idx_col = idx % m_cols;
-    m_data[idx_row][idx_col] = value;
-    idx++;
+    m_data[idx++] = value;
   }
 }
 
