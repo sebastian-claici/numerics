@@ -1,5 +1,4 @@
 #include "core.h"
-#include <vecLib/cblas.h>
 
 #ifdef __APPLE__
 #include <Accelerate/Accelerate.h>
