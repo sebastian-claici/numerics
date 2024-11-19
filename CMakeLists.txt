@@ -24,4 +24,7 @@ else()
     message(STATUS "OpenMP not found")
 endif()
 
+find_package( BLAS REQUIRED )
+message( STATUS BLAS found: ${BLAS_LIBRARIES} )
+
 add_subdirectory("test/")

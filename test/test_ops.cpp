@@ -25,7 +25,7 @@ TEST_CASE("Matrix-vector multiplication", "[matmul]") {
 }
 
 TEST_CASE("Benchmark matrix-vector multiplication", "[matmul][!benchmark]") {
-  const size_t n = 1000;
+  const size_t n = 4096;
   Matrix<double> rM = rand(n, n);
   Vector<double> rv = rand(n);
 
@@ -48,7 +48,7 @@ TEST_CASE("Matrix-matrix multiplication", "[matmul]") {
 }
 
 TEST_CASE("Benchmark matrix-matrix multiplication", "[matmul][!benchmark]") {
-  const size_t n = 1024;
+  const size_t n = 2048;
   Matrix<double> rA = rand(n, n);
   Matrix<double> rB = rand(n, n);
 

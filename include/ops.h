@@ -1,4 +1,11 @@
 #include "core.h"
+#include <vecLib/cblas.h>
+
+#ifdef __APPLE__
+#include <Accelerate/Accelerate.h>
+#else
+#include <cblas.h>
+#endif
 
 #include <random>
 
@@ -54,6 +61,36 @@ template <class T> Vector<T> matmul(const Matrix<T> &A, const Vector<T> &v) {
   return result;
 }
 
+template <>
+inline Vector<float> matmul<float>(const Matrix<float> &A,
+                                   const Vector<float> &v) {
+  if (A.m_cols != v.m_n) {
+    std::runtime_error("Dimensions are incompatible");
+  }
+
+  Vector<float> result(A.m_rows, 0.0);
+  cblas_sgemv(CblasRowMajor, CblasNoTrans, A.m_rows, A.m_cols, 1.0f,
+              A.m_data.data(), A.m_rows, v.m_data.data(), 1, 0.0f,
+              result.m_data.data(), 1);
+
+  return result;
+}
+
+template <>
+inline Vector<double> matmul<double>(const Matrix<double> &A,
+                                     const Vector<double> &v) {
+  if (A.m_cols != v.m_n) {
+    std::runtime_error("Dimensions are incompatible");
+  }
+
+  Vector<double> result(A.m_rows, 0.0);
+  cblas_dgemv(CblasRowMajor, CblasNoTrans, A.m_rows, A.m_cols, 1.0,
+              A.m_data.data(), A.m_rows, v.m_data.data(), 1, 0.0,
+              result.m_data.data(), 1);
+
+  return result;
+}
+
 template <class T> Matrix<T> matmul(const Matrix<T> &A, const Matrix<T> &B) {
   if (A.m_cols != B.m_rows) {
     std::runtime_error("Dimensions are incompatible");
@@ -73,6 +110,38 @@ template <class T> Matrix<T> matmul(const Matrix<T> &A, const Matrix<T> &B) {
       }
     }
   }
+
+  return result;
+}
+
+template <>
+inline Matrix<float> matmul<float>(const Matrix<float> &A,
+                                   const Matrix<float> &B) {
+  if (A.m_cols != B.m_rows) {
+    std::runtime_error("Dimensions are incompatible");
+  }
+
+  Matrix<float> result(A.m_rows, B.m_cols, 0.f);
+
+  cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, A.m_rows, B.m_cols,
+              A.m_cols, 1.0f, A.m_data.data(), A.m_rows, B.m_data.data(),
+              B.m_rows, 0.0f, result.m_data.data(), result.m_rows);
+
+  return result;
+}
+
+template <>
+inline Matrix<double> matmul<double>(const Matrix<double> &A,
+                                     const Matrix<double> &B) {
+  if (A.m_cols != B.m_rows) {
+    std::runtime_error("Dimensions are incompatible");
+  }
+
+  Matrix<double> result(A.m_rows, B.m_cols, 0.f);
+
+  cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, A.m_rows, B.m_cols,
+              A.m_cols, 1.0, A.m_data.data(), A.m_rows, B.m_data.data(),
+              B.m_rows, 0.0, result.m_data.data(), result.m_rows);
 
   return result;
 }
