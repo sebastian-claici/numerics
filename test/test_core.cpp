@@ -11,7 +11,7 @@ TEST_CASE("Vector indexing", "[vector]") {
   REQUIRE(v1[2] == 3);
 }
 
-TEST_CASE("Matrix indexing", "[vector]") {
+TEST_CASE("Matrix indexing", "[matrix]") {
   Matrix<int> A1{{1, 2}, {3, 4}};
 
   REQUIRE(A1(0, 0) == 1);
@@ -20,7 +20,7 @@ TEST_CASE("Matrix indexing", "[vector]") {
   REQUIRE(A1(1, 1) == 4);
 }
 
-TEST_CASE("Vector equality operator", "[matrix]") {
+TEST_CASE("Vector equality operator", "[vector]") {
   Vector<int> v1{1, 2, 3};
   Vector<int> v2{1, 2, 3};
   Vector<int> v3{1, 2, 4};
