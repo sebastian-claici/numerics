@@ -1,5 +1,4 @@
-#ifndef CORE_H_
-#define CORE_H_
+#pragma once
 
 #include <algorithm>
 #include <initializer_list>
@@ -323,4 +322,3 @@ template <class T> void Matrix<T>::push(std::initializer_list<T> values) {
 
 template <class T> Matrix<T>::~Matrix() {}
 
-#endif // CORE_H_
