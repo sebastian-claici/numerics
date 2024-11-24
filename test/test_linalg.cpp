@@ -45,3 +45,26 @@ TEST_CASE("Backward substitution (matrix)", "[solve]") {
   REQUIRE_THAT(x(1, 1), WithinRel(-13.0));
   REQUIRE_THAT(x(2, 1), WithinRel(2.0));
 }
+
+TEST_CASE("Forward substitution (vector)", "[solve]") {
+  Matrix<double> A{{1, 0, 0}, {6, 1, 0}, {1, -2, 1}};
+  Vector<double> b{2, -1, 4};
+
+  auto x = fsub(A, b);
+  REQUIRE_THAT(x[0], WithinRel(2.0));
+  REQUIRE_THAT(x[1], WithinRel(-13.0));
+  REQUIRE_THAT(x[2], WithinRel(-24.0));
+}
+
+TEST_CASE("Forward substitution (matrix)", "[solve]") {
+  Matrix<double> A{{1, 0, 0}, {6, 1, 0}, {1, -2, 1}};
+  Matrix<double> b{{2, 2}, {-1, -1}, {4, 4}};
+
+  auto x = fsub(A, b);
+  REQUIRE_THAT(x(0, 0), WithinRel(2.0));
+  REQUIRE_THAT(x(1, 0), WithinRel(-13.0));
+  REQUIRE_THAT(x(2, 0), WithinRel(-24.0));
+  REQUIRE_THAT(x(0, 1), WithinRel(2.0));
+  REQUIRE_THAT(x(1, 1), WithinRel(-13.0));
+  REQUIRE_THAT(x(2, 1), WithinRel(-24.0));
+}
