@@ -1,5 +1,4 @@
-#ifndef CHOLESKY_H
-#define CHOLESKY_H
+#pragma once
 
 #include "core.h"
 #include <cmath>
@@ -28,5 +27,3 @@ struct Cholesky {
     }
   }
 };
-
-#endif // !CHOLESKY_H

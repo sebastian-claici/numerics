@@ -1,4 +1,5 @@
 #include "linalg/cholesky.h"
+#include "linalg/solve.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -20,4 +21,27 @@ TEST_CASE("Cholesky decomposition", "[decomposition]") {
   REQUIRE_THAT(chol.L(0, 2), WithinRel(0.0));
   REQUIRE_THAT(chol.L(1, 2), WithinRel(0.0));
   REQUIRE_THAT(chol.L(2, 2), WithinRel(3.0));
+}
+
+TEST_CASE("Backward substitution (vector)", "[solve]") {
+  Matrix<double> A{{1, -2, 1}, {0, 1, 6}, {0, 0, 1}};
+  Vector<double> b{4, -1, 2};
+
+  auto x = bsub(A, b);
+  REQUIRE_THAT(x[0], WithinRel(-24.0));
+  REQUIRE_THAT(x[1], WithinRel(-13.0));
+  REQUIRE_THAT(x[2], WithinRel(2.0));
+}
+
+TEST_CASE("Backward substitution (matrix)", "[solve]") {
+  Matrix<double> A{{1, -2, 1}, {0, 1, 6}, {0, 0, 1}};
+  Matrix<double> b{{4, 4}, {-1, -1}, {2, 2}};
+
+  auto x = bsub(A, b);
+  REQUIRE_THAT(x(0, 0), WithinRel(-24.0));
+  REQUIRE_THAT(x(1, 0), WithinRel(-13.0));
+  REQUIRE_THAT(x(2, 0), WithinRel(2.0));
+  REQUIRE_THAT(x(0, 1), WithinRel(-24.0));
+  REQUIRE_THAT(x(1, 1), WithinRel(-13.0));
+  REQUIRE_THAT(x(2, 1), WithinRel(2.0));
 }
