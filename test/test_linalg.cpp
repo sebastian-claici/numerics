@@ -68,3 +68,19 @@ TEST_CASE("Forward substitution (matrix)", "[solve]") {
   REQUIRE_THAT(x(1, 1), WithinRel(-13.0));
   REQUIRE_THAT(x(2, 1), WithinRel(-24.0));
 }
+
+TEST_CASE("Cholesky solver", "[solve]") {
+  Matrix<double> A{
+      {4.0, 12.0, -16.0}, {12.0, 37.0, -43.0}, {-16.0, -43.0, 98.0}};
+  Vector<double> b{1.0, 1.0, 1.0};
+
+  auto x = solve(A, b);
+  REQUIRE_THAT(x[0], WithinRel(37.9166667));
+  REQUIRE_THAT(x[1], WithinRel(-10.3333333));
+  REQUIRE_THAT(x[2], WithinRel(1.6666667));
+
+  auto bp = matmul(A, x);
+  REQUIRE_THAT(bp[0], WithinRel(b[0]));
+  REQUIRE_THAT(bp[1], WithinRel(b[1]));
+  REQUIRE_THAT(bp[2], WithinRel(b[2]));
+}
