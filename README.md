@@ -5,4 +5,4 @@ Working my way through the third edition of [Numerical Recipes](https://numerica
 Current focus: Matrix decomposition methods, including:
 - [X] Cholesky decomposition
 - [ ] QR decomposition
-- [ ] Forward and backward substitution methods
+- [X] Forward and backward substitution methods
