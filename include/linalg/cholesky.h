@@ -2,6 +2,7 @@
 
 #include "core.h"
 #include <cmath>
+#include <stdexcept>
 
 struct Cholesky {
   size_t n;
@@ -14,6 +15,9 @@ struct Cholesky {
       for (size_t k = 0; k < i; ++k) {
         diag -= L(i, k) * L(i, k);
       }
+      if (diag < 0.0)
+        throw std::invalid_argument("Matrix is not positive semi-definite.");
+
       L(i, i) = sqrt(diag);
 
 #pragma omp parallel for
