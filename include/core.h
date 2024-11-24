@@ -321,4 +321,3 @@ template <class T> void Matrix<T>::push(std::initializer_list<T> values) {
 }
 
 template <class T> Matrix<T>::~Matrix() {}
-
