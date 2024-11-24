@@ -30,6 +30,21 @@ inline Matrix<double> rand(size_t rows, size_t cols) {
   return Matrix<double>(rows, cols, gen);
 }
 
+template <class T> bool symmetric(const Matrix<T> &A) {
+  if (A.m_rows != A.m_cols) {
+    return false;
+  }
+  for (size_t i = 0; i < A.m_rows; ++i) {
+    for (size_t j = i + 1; j < A.m_cols; ++j) {
+      if (A(i, j) != A(j, i)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 template <class T> T dot(const Vector<T> &a, const Vector<T> &b) {
   if (a.m_n != b.m_n) {
     std::runtime_error("Vector dimensions are incompatible");

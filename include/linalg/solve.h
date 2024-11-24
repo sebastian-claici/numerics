@@ -1,6 +1,10 @@
 #pragma once
 
+#include <stdexcept>
+
 #include "core.h"
+#include "linalg/cholesky.h"
+#include "ops.h"
 
 template <class T> Vector<T> bsub(const Matrix<T> &U, const Vector<T> &b) {
   Vector<T> x(U.m_rows);
@@ -75,3 +79,23 @@ template <class T> Matrix<T> fsub(const Matrix<T> &L, const Matrix<T> &b) {
 
   return x;
 }
+
+template <class T> Vector<T> solve(const Matrix<T> &A, const Vector<T> &b) {
+  // Currently only works for symmetric, positive definite matrices
+  if (!symmetric(A)) {
+    throw std::logic_error("Solver only implemented for symmetric matrices.");
+  }
+
+  try {
+    Cholesky chol(A);
+    auto Lt = chol.L.transpose();
+    // Forward substitution to solve Ly = b
+    auto y = fsub(chol.L, b);
+    // Backward substitution to solve L^T x = y
+    return bsub(Lt, y);
+  } catch (const std::invalid_argument &e) {
+    throw std::logic_error("Solver not implemented for non-PSD matrices.");
+  }
+}
+
+template <class T> Matrix<T> solve(const Matrix<T> &A, const Matrix<T> &b);
