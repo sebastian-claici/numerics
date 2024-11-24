@@ -302,7 +302,7 @@ template <class T> Matrix<T> Matrix<T>::transpose() const {
 #pragma omp parallel for
   for (size_t i = 0; i < m_rows; ++i) {
     for (size_t j = 0; j < m_cols; ++j) {
-      result[j * m_rows + i] = m_data[i * m_cols + j];
+      result.m_data[j * m_rows + i] = m_data[i * m_cols + j];
     }
   }
 

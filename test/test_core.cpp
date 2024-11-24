@@ -20,6 +20,16 @@ TEST_CASE("Matrix indexing", "[matrix]") {
   REQUIRE(A1(1, 1) == 4);
 }
 
+TEST_CASE("Matrix transpose", "[matrix]") {
+  Matrix<int> A{{1, 2}, {3, 4}};
+  auto At = A.transpose();
+
+  REQUIRE(A(0, 0) == At(0, 0));
+  REQUIRE(A(0, 1) == At(1, 0));
+  REQUIRE(A(1, 0) == At(0, 1));
+  REQUIRE(A(1, 1) == At(1, 1));
+}
+
 TEST_CASE("Vector equality operator", "[vector]") {
   Vector<int> v1{1, 2, 3};
   Vector<int> v2{1, 2, 3};
