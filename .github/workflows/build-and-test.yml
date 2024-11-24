@@ -1,4 +1,4 @@
-name: Numerical Recipes
+name: build-and-test
 
 on:
   push:
