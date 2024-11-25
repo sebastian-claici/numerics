@@ -4,11 +4,11 @@
 #include <cmath>
 #include <stdexcept>
 
-struct Cholesky {
+template <class T> struct Cholesky {
   size_t n;
-  Matrix<double> L;
+  Matrix<T> L;
 
-  Cholesky(const Matrix<double> &A) : n(A.m_rows), L(A.m_rows, A.m_cols, 0.0) {
+  Cholesky(const Matrix<T> &A) : n(A.m_rows), L(A.m_rows, A.m_cols) {
     // assumes A is square and positive semi-definite
     for (size_t i = 0; i < n; ++i) {
       double diag = A(i, i);
