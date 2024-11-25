@@ -106,14 +106,14 @@ template <class T> bool Vector<T>::operator==(const Vector<T> &rhs) const {
 
 template <class T> inline T &Vector<T>::operator[](size_t i) {
   if (i >= m_n) {
-    throw std::runtime_error("Out of bounds");
+    throw std::runtime_error("Out of bounds access in Vector.");
   }
   return m_data[i];
 }
 
 template <class T> inline const T &Vector<T>::operator[](const size_t i) const {
   if (i >= m_n) {
-    throw std::runtime_error("Out of bounds");
+    throw std::runtime_error("Out of bounds access in Vector.");
   }
   return m_data[i];
 }
@@ -246,7 +246,7 @@ template <class T> bool Matrix<T>::operator==(const Matrix<T> &rhs) const {
 template <class T>
 inline T &Matrix<T>::operator()(const size_t i, const size_t j) {
   if (i >= m_rows || j >= m_cols) {
-    throw std::runtime_error("Out of bounds.");
+    throw std::runtime_error("Out of bounds access in Matrix.");
   }
 
   return m_data[i * m_cols + j];
@@ -255,7 +255,7 @@ inline T &Matrix<T>::operator()(const size_t i, const size_t j) {
 template <class T>
 inline const T &Matrix<T>::operator()(const size_t i, const size_t j) const {
   if (i >= m_rows || j >= m_cols) {
-    throw std::runtime_error("Out of bounds");
+    throw std::runtime_error("Out of bounds access in Matrix.");
   }
   return m_data[i * m_cols + j];
 }
