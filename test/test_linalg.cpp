@@ -1,4 +1,5 @@
 #include "linalg/cholesky.h"
+#include "linalg/lu.h"
 #include "linalg/solve.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -6,6 +7,23 @@
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 using Catch::Matchers::WithinRel;
+
+TEST_CASE("LU decomposition", "[decomposition]") {
+  Matrix<double> A{{4, 3}, {6, 3}};
+
+  LU lu(A);
+  REQUIRE_THAT(lu.L(0, 0), WithinRel(1.0));
+  REQUIRE_THAT(lu.L(1, 0), WithinRel(1.5));
+  REQUIRE_THAT(lu.L(1, 1), WithinRel(1.0));
+  REQUIRE_THAT(lu.U(0, 0), WithinRel(4.0));
+  REQUIRE_THAT(lu.U(0, 1), WithinRel(3.0));
+  REQUIRE_THAT(lu.U(1, 1), WithinRel(-1.5));
+
+  auto A_test = matmul(lu.L, lu.U);
+  for (size_t i = 0; i < A.m_rows; ++i)
+    for (size_t j = 0; j < A.m_cols; ++j)
+      REQUIRE_THAT(A(i, j), WithinRel(A_test(i, j)));
+}
 
 TEST_CASE("Cholesky decomposition", "[decomposition]") {
   Matrix<double> A{
