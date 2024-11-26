@@ -35,6 +35,21 @@ where
             data,
         }
     }
+
+    pub fn transpose(&self) -> Self {
+        let mut data = Vec::with_capacity(self.n_cols * self.n_rows);
+        for j in 0..self.n_cols {
+            for i in 0..self.n_rows {
+                data.push(self.data[i * self.n_cols + j]);
+            }
+        }
+
+        Self {
+            n_rows: self.n_cols,
+            n_cols: self.n_rows,
+            data,
+        }
+    }
 }
 
 impl<T> Index<(usize, usize)> for Matrix<T> {
