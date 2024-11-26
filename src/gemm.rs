@@ -16,9 +16,9 @@ where
     }
 
     let mut result = Matrix::new(lhs.n_rows, rhs.n_cols);
-    for i in 0..lhs.n_rows {
-        for j in 0..rhs.n_cols {
-            for k in 0..rhs.n_rows {
+    for k in 0..rhs.n_rows {
+        for i in 0..lhs.n_rows {
+            for j in 0..rhs.n_cols {
                 result[(i, j)] = lhs[(i, k)] * rhs[(k, j)];
             }
         }
