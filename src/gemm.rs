@@ -1,10 +1,7 @@
-use std::cmp::min;
 use std::default::Default;
 use std::ops::{Add, AddAssign, Mul};
 
 use crate::Matrix;
-
-const BLOCK_SIZE: usize = 64;
 
 pub fn matmul<T>(lhs: &Matrix<T>, rhs: &Matrix<T>) -> Matrix<T>
 where
@@ -18,20 +15,20 @@ where
         );
     }
 
-    let lhs_t = lhs.transpose();
-
-    let mut result = Matrix::new(lhs.n_rows, rhs.n_cols);
-    for bi in (0..lhs.n_rows).step_by(BLOCK_SIZE) {
-        for bj in (0..rhs.n_cols).step_by(BLOCK_SIZE) {
-            for k in 0..rhs.n_rows {
-                for i in bi..min(lhs.n_rows, bi + BLOCK_SIZE) {
-                    for j in bj..min(rhs.n_cols, bj + BLOCK_SIZE) {
-                        result[(i, j)] += lhs_t[(k, i)] * rhs[(k, j)];
-                    }
+    let mut data = vec![T::default(); lhs.n_rows * rhs.n_cols];
+    data.chunks_mut(lhs.n_rows)
+        .enumerate()
+        .for_each(|(i, c_row)| {
+            for k in 0..lhs.n_cols {
+                for j in 0..rhs.n_cols {
+                    c_row[j] += lhs[(i, k)] * rhs[(k, j)];
                 }
             }
-        }
-    }
+        });
 
-    result
+    Matrix {
+        n_rows: lhs.n_rows,
+        n_cols: rhs.n_cols,
+        data,
+    }
 }

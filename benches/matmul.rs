@@ -19,9 +19,9 @@ fn transpose_bench(bencher: divan::Bencher, n: usize) {
     })
 }
 
-#[divan::bench(args = [128, 512, 1024])]
+#[divan::bench(sample_count=20, args = [128, 512, 1024, 2048])]
 fn matmul_bench(bencher: divan::Bencher, n: usize) {
-    let gen: fn() -> f32 = || rand::thread_rng().gen();
+    let gen: fn() -> f32 = || 1.0;
 
     let a = Matrix::from_gen(n, n, gen);
     let b = Matrix::from_gen(n, n, gen);
