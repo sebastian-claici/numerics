@@ -1,12 +1,12 @@
 pub mod gemm;
 
 use std::default::Default;
-use std::ops::{Add, Index, IndexMut, Sub};
+use std::ops::{Add, AddAssign, Index, IndexMut, Sub};
 
 #[derive(Debug)]
 pub struct Matrix<T> {
-    n_rows: usize,
-    n_cols: usize,
+    pub n_rows: usize,
+    pub n_cols: usize,
     data: Vec<T>,
 }
 
@@ -23,11 +23,13 @@ where
         }
     }
 
-    pub fn from_gen(n_rows: usize, n_cols: usize, gen: fn() -> T) -> Self {
+    pub fn from_gen(n_rows: usize, n_cols: usize, gen: fn(usize, usize) -> T) -> Self {
         let mut data = Vec::with_capacity(n_rows * n_cols);
-        (0..n_rows * n_cols).for_each(|_| {
-            data.push(gen());
-        });
+        (0..n_rows * n_cols)
+            .map(|i| (i / n_cols, i % n_cols))
+            .for_each(|(i, j)| {
+                data.push(gen(i, j));
+            });
 
         Self {
             n_rows,
@@ -84,11 +86,11 @@ impl<T> IndexMut<(usize, usize)> for Matrix<T> {
     }
 }
 
-impl<T> Add for Matrix<T>
+impl<T> Add for &Matrix<T>
 where
     T: Add<Output = T> + Clone,
 {
-    type Output = Self;
+    type Output = Matrix<T>;
 
     fn add(self, other: Self) -> Self::Output {
         if self.n_rows != other.n_rows || self.n_cols != other.n_cols {
@@ -105,11 +107,49 @@ where
             .map(|(x, y)| x.clone() + y.clone())
             .collect();
 
-        Self {
+        Matrix {
             n_rows: self.n_rows,
             n_cols: self.n_cols,
             data,
         }
+    }
+}
+
+impl<T> AddAssign for Matrix<T>
+where
+    T: AddAssign + Clone,
+{
+    fn add_assign(&mut self, other: Self) {
+        if self.n_rows != other.n_rows || self.n_cols != other.n_cols {
+            panic!(
+                "Cannot add matrices of different shapes: ({}, {}) ({}, {})",
+                self.n_rows, self.n_cols, other.n_rows, other.n_cols
+            );
+        }
+
+        self.data
+            .iter_mut()
+            .zip(other.data.iter())
+            .for_each(|(x, y)| *x += y.clone());
+    }
+}
+
+impl<T> AddAssign<&Matrix<T>> for Matrix<T>
+where
+    T: AddAssign + Clone,
+{
+    fn add_assign(&mut self, other: &Self) {
+        if self.n_rows != other.n_rows || self.n_cols != other.n_cols {
+            panic!(
+                "Cannot add matrices of different shapes: ({}, {}) ({}, {})",
+                self.n_rows, self.n_cols, other.n_rows, other.n_cols
+            );
+        }
+
+        self.data
+            .iter_mut()
+            .zip(other.data.iter())
+            .for_each(|(x, y)| *x += y.clone());
     }
 }
 
