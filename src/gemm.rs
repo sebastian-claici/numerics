@@ -1,7 +1,7 @@
 use std::default::Default;
 use std::ops::{Add, AddAssign, Mul};
 
-use crate::Matrix;
+use crate::core::matrix::Matrix;
 
 pub fn matmul<T>(lhs: &Matrix<T>, rhs: &Matrix<T>) -> Matrix<T>
 where
