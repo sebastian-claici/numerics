@@ -32,3 +32,35 @@ where
         data,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn matmul_small() {
+        let a = Matrix::from_gen(2, 2, |i, j| i + j);
+        let b = Matrix::from_gen(2, 2, |i, j| i + j);
+
+        let c = matmul(&a, &b);
+        assert_eq!(c[(0, 0)], 1);
+        assert_eq!(c[(0, 1)], 2);
+        assert_eq!(c[(1, 0)], 2);
+        assert_eq!(c[(1, 1)], 5);
+    }
+
+    #[test]
+    fn matmul_dims() {
+        let a = Matrix::from_gen(2, 3, |i, j| i + j);
+        let b = Matrix::from_gen(3, 2, |i, j| i + j);
+
+        let c = matmul(&a, &b);
+        assert_eq!(c.n_rows, 2);
+        assert_eq!(c.n_cols, 2);
+
+        assert_eq!(c[(0, 0)], 5);
+        assert_eq!(c[(0, 1)], 8);
+        assert_eq!(c[(1, 0)], 8);
+        assert_eq!(c[(1, 1)], 14);
+    }
+}
