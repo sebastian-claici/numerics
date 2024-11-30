@@ -17,7 +17,7 @@ where
     }
 
     pub fn from_gen(n: usize, gen: fn(usize) -> T) -> Self {
-        let data = (0..n).map(|i| gen(i)).collect();
+        let data = (0..n).map(gen).collect();
 
         Self { n, data }
     }
