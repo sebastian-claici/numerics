@@ -1,7 +1,7 @@
 pub mod gemm;
 
 use std::default::Default;
-use std::ops::{Add, AddAssign, Index, IndexMut, Sub};
+use std::ops::{Add, AddAssign, Index, IndexMut, Sub, SubAssign};
 
 #[derive(Debug)]
 pub struct Matrix<T> {
@@ -107,7 +107,7 @@ where
             .map(|(x, y)| x.clone() + y.clone())
             .collect();
 
-        Matrix {
+        Self::Output {
             n_rows: self.n_rows,
             n_cols: self.n_cols,
             data,
@@ -153,11 +153,11 @@ where
     }
 }
 
-impl<T> Sub for Matrix<T>
+impl<T> Sub for &Matrix<T>
 where
     T: Sub<Output = T> + Clone,
 {
-    type Output = Self;
+    type Output = Matrix<T>;
 
     fn sub(self, other: Self) -> Self::Output {
         if self.n_rows != other.n_rows || self.n_cols != other.n_cols {
@@ -174,10 +174,65 @@ where
             .map(|(x, y)| x.clone() - y.clone())
             .collect();
 
-        Self {
+        Self::Output {
             n_rows: self.n_rows,
             n_cols: self.n_cols,
             data,
         }
+    }
+}
+
+impl<T> SubAssign<&Matrix<T>> for Matrix<T>
+where
+    T: SubAssign + Clone,
+{
+    fn sub_assign(&mut self, other: &Self) {
+        if self.n_rows != other.n_rows || self.n_cols != other.n_cols {
+            panic!(
+                "Cannot add matrices of different shapes: ({}, {}) ({}, {})",
+                self.n_rows, self.n_cols, other.n_rows, other.n_cols
+            );
+        }
+
+        self.data
+            .iter_mut()
+            .zip(other.data.iter())
+            .for_each(|(x, y)| *x -= y.clone());
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_gen() {
+        let a = Matrix::from_gen(2, 2, |i, j| i + j);
+        assert_eq!(a[(0, 0)], 0);
+        assert_eq!(a[(0, 1)], 1);
+        assert_eq!(a[(1, 0)], 1);
+        assert_eq!(a[(1, 1)], 2);
+    }
+
+    #[test]
+    fn test_add() {
+        let a = Matrix::from_gen(2, 2, |i, j| (i + j) as i32);
+        let b = Matrix::from_gen(2, 2, |i, j| (i as i32 - j as i32));
+        let c = &a + &b;
+        assert_eq!(c[(0, 0)], 0);
+        assert_eq!(c[(0, 1)], 0);
+        assert_eq!(c[(1, 0)], 2);
+        assert_eq!(c[(1, 1)], 2);
+    }
+
+    #[test]
+    fn test_sub() {
+        let a = Matrix::from_gen(2, 2, |i, j| (i + j) as i32);
+        let b = Matrix::from_gen(2, 2, |i, j| (i as i32 - j as i32));
+        let c = &a - &b;
+        assert_eq!(c[(0, 0)], 0);
+        assert_eq!(c[(0, 1)], 2);
+        assert_eq!(c[(1, 0)], 0);
+        assert_eq!(c[(1, 1)], 2);
     }
 }
