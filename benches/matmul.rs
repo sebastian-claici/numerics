@@ -1,7 +1,7 @@
 use rand::Rng;
 
+use numerics::core::gemm::matmul;
 use numerics::core::matrix::Matrix;
-use numerics::gemm::matmul;
 
 fn main() {
     // Run registered benchmarks.
