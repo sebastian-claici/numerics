@@ -40,7 +40,7 @@ impl<T> Index<usize> for Vector<T> {
 
 impl<T> IndexMut<usize> for Vector<T> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        if index >= self.n_rows {
+        if index >= self.n {
             panic!(
                 "Index {:?} out of bounds for vector of size {:?}",
                 index, self.n
