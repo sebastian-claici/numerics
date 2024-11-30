@@ -1,8 +1,27 @@
 use std::default::Default;
+use std::iter::Sum;
 use std::ops::{Add, AddAssign, Mul};
 
 use crate::core::matrix::Matrix;
 use crate::core::vector::Vector;
+
+pub fn dot<T>(lhs: &Vector<T>, rhs: &Vector<T>) -> T
+where
+    T: Mul<Output = T> + Copy + Sum,
+{
+    if lhs.n != rhs.n {
+        panic!(
+            "Vectors must have the same dimensions. Got {} and {}.",
+            lhs.n, rhs.n
+        );
+    }
+
+    lhs.data
+        .iter()
+        .zip(rhs.data.iter())
+        .map(|(x, y)| *x * *y)
+        .sum()
+}
 
 pub fn gemv<T>(lhs: &Matrix<T>, rhs: &Vector<T>) -> Vector<T>
 where
