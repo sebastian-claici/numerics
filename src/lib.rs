@@ -54,6 +54,146 @@ where
     }
 }
 
+impl Matrix<f32> {
+    pub fn zeros(n_rows: usize, n_cols: usize) -> Self {
+        let data = (0..n_cols * n_rows).map(|_| 0.0).collect();
+
+        Self {
+            n_rows,
+            n_cols,
+            data,
+        }
+    }
+
+    pub fn ones(n_rows: usize, n_cols: usize) -> Self {
+        let data = (0..n_cols * n_rows).map(|_| 1.0).collect();
+
+        Self {
+            n_rows,
+            n_cols,
+            data,
+        }
+    }
+
+    pub fn eye(n: usize) -> Self {
+        let mut data = Vec::with_capacity(n * n);
+        (0..n * n).map(|i| (i / n, i % n)).for_each(|(i, j)| {
+            data.push(if i == j { 1.0 } else { 0.0 });
+        });
+
+        Self {
+            n_rows: n,
+            n_cols: n,
+            data,
+        }
+    }
+}
+
+impl Matrix<f64> {
+    pub fn zeros(n_rows: usize, n_cols: usize) -> Self {
+        let data = (0..n_cols * n_rows).map(|_| 0.0).collect();
+
+        Self {
+            n_rows,
+            n_cols,
+            data,
+        }
+    }
+
+    pub fn ones(n_rows: usize, n_cols: usize) -> Self {
+        let data = (0..n_cols * n_rows).map(|_| 1.0).collect();
+
+        Self {
+            n_rows,
+            n_cols,
+            data,
+        }
+    }
+
+    pub fn eye(n: usize) -> Self {
+        let mut data = Vec::with_capacity(n * n);
+        (0..n * n).map(|i| (i / n, i % n)).for_each(|(i, j)| {
+            data.push(if i == j { 1.0 } else { 0.0 });
+        });
+
+        Self {
+            n_rows: n,
+            n_cols: n,
+            data,
+        }
+    }
+}
+
+impl Matrix<i32> {
+    pub fn zeros(n_rows: usize, n_cols: usize) -> Self {
+        let data = (0..n_cols * n_rows).map(|_| 0).collect();
+
+        Self {
+            n_rows,
+            n_cols,
+            data,
+        }
+    }
+
+    pub fn ones(n_rows: usize, n_cols: usize) -> Self {
+        let data = (0..n_cols * n_rows).map(|_| 1).collect();
+
+        Self {
+            n_rows,
+            n_cols,
+            data,
+        }
+    }
+
+    pub fn eye(n: usize) -> Self {
+        let mut data = Vec::with_capacity(n * n);
+        (0..n * n).map(|i| (i / n, i % n)).for_each(|(i, j)| {
+            data.push(if i == j { 1 } else { 0 });
+        });
+
+        Self {
+            n_rows: n,
+            n_cols: n,
+            data,
+        }
+    }
+}
+
+impl Matrix<i64> {
+    pub fn zeros(n_rows: usize, n_cols: usize) -> Self {
+        let data = (0..n_cols * n_rows).map(|_| 0).collect();
+
+        Self {
+            n_rows,
+            n_cols,
+            data,
+        }
+    }
+
+    pub fn ones(n_rows: usize, n_cols: usize) -> Self {
+        let data = (0..n_cols * n_rows).map(|_| 1).collect();
+
+        Self {
+            n_rows,
+            n_cols,
+            data,
+        }
+    }
+
+    pub fn eye(n: usize) -> Self {
+        let mut data = Vec::with_capacity(n * n);
+        (0..n * n).map(|i| (i / n, i % n)).for_each(|(i, j)| {
+            data.push(if i == j { 1 } else { 0 });
+        });
+
+        Self {
+            n_rows: n,
+            n_cols: n,
+            data,
+        }
+    }
+}
+
 impl<T> Index<(usize, usize)> for Matrix<T> {
     type Output = T;
 
@@ -112,25 +252,6 @@ where
             n_cols: self.n_cols,
             data,
         }
-    }
-}
-
-impl<T> AddAssign for Matrix<T>
-where
-    T: AddAssign + Clone,
-{
-    fn add_assign(&mut self, other: Self) {
-        if self.n_rows != other.n_rows || self.n_cols != other.n_cols {
-            panic!(
-                "Cannot add matrices of different shapes: ({}, {}) ({}, {})",
-                self.n_rows, self.n_cols, other.n_rows, other.n_cols
-            );
-        }
-
-        self.data
-            .iter_mut()
-            .zip(other.data.iter())
-            .for_each(|(x, y)| *x += y.clone());
     }
 }
 
