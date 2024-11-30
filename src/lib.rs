@@ -235,4 +235,19 @@ mod test {
         assert_eq!(c[(1, 0)], 0);
         assert_eq!(c[(1, 1)], 2);
     }
+
+    #[test]
+    fn test_transpose() {
+        let mut a = Matrix::new(2, 2);
+        a[(0, 0)] = 1;
+        a[(0, 1)] = 2;
+        a[(1, 0)] = 3;
+        a[(1, 1)] = 4;
+
+        let at = a.transpose();
+        assert_eq!(at[(0, 0)], 1);
+        assert_eq!(at[(0, 1)], 3);
+        assert_eq!(at[(1, 0)], 2);
+        assert_eq!(at[(1, 1)], 4);
+    }
 }
