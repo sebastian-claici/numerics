@@ -1,6 +1,6 @@
 use rand::Rng;
 
-use numerics::core::gemm::matmul;
+use numerics::core::gemm::gemm;
 use numerics::core::matrix::Matrix;
 
 fn main() {
@@ -27,6 +27,6 @@ fn matmul_bench(bencher: divan::Bencher, n: usize) {
     let b = Matrix::from_gen(n, n, gen);
 
     bencher.bench(|| {
-        matmul(&a, &b);
+        gemm(&a, &b);
     })
 }

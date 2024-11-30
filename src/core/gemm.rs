@@ -2,8 +2,31 @@ use std::default::Default;
 use std::ops::{Add, AddAssign, Mul};
 
 use crate::core::matrix::Matrix;
+use crate::core::vector::Vector;
 
-pub fn matmul<T>(lhs: &Matrix<T>, rhs: &Matrix<T>) -> Matrix<T>
+pub fn gemv<T>(lhs: &Matrix<T>, rhs: &Vector<T>) -> Vector<T>
+where
+    T: Add<Output = T> + AddAssign + Mul<Output = T> + Copy + Default,
+{
+    if lhs.n_cols != rhs.n {
+        panic!(
+            "Matrix-vector product with incompatible dimensions: {:?} and {:?}",
+            (lhs.n_rows, lhs.n_cols),
+            rhs.n
+        );
+    }
+
+    let mut result = Vector::new(lhs.n_rows);
+    for i in 0..lhs.n_rows {
+        result[i] = T::default();
+        for j in 0..lhs.n_cols {
+            result[i] += lhs[(i, j)] * rhs[j];
+        }
+    }
+    result
+}
+
+pub fn gemm<T>(lhs: &Matrix<T>, rhs: &Matrix<T>) -> Matrix<T>
 where
     T: Add<Output = T> + AddAssign + Mul<Output = T> + Copy + Default,
 {
@@ -42,7 +65,7 @@ mod tests {
         let a = Matrix::from_gen(2, 2, |i, j| i + j);
         let b = Matrix::from_gen(2, 2, |i, j| i + j);
 
-        let c = matmul(&a, &b);
+        let c = gemm(&a, &b);
         assert_eq!(c[(0, 0)], 1);
         assert_eq!(c[(0, 1)], 2);
         assert_eq!(c[(1, 0)], 2);
@@ -54,7 +77,7 @@ mod tests {
         let a = Matrix::from_gen(2, 3, |i, j| i + j);
         let b = Matrix::from_gen(3, 2, |i, j| i + j);
 
-        let c = matmul(&a, &b);
+        let c = gemm(&a, &b);
         assert_eq!(c.n_rows, 2);
         assert_eq!(c.n_cols, 2);
 
