@@ -52,6 +52,26 @@ where
     }
 }
 
+impl<T> Matrix<T>
+where
+    T: PartialEq,
+{
+    pub fn is_symmetric(&self) -> bool {
+        if self.n_rows != self.n_cols {
+            return false;
+        }
+        for i in 0..self.n_rows {
+            for j in (i + 1)..self.n_rows {
+                if self[(i, j)] != self[(j, i)] {
+                    return false;
+                }
+            }
+        }
+
+        true
+    }
+}
+
 impl Matrix<f32> {
     pub fn zeros(n_rows: usize, n_cols: usize) -> Self {
         let data = (0..n_cols * n_rows).map(|_| 0.0).collect();
