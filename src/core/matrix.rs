@@ -319,4 +319,20 @@ mod test {
         assert_eq!(at[(1, 0)], 2);
         assert_eq!(at[(1, 1)], 4);
     }
+
+    #[test]
+    fn test_is_symmetric() {
+        let mut a = Matrix::new(2, 2);
+        a[(0, 0)] = 1;
+        a[(0, 1)] = 2;
+        a[(1, 0)] = 3;
+        a[(1, 1)] = 4;
+        assert!(!a.is_symmetric());
+
+        a[(0, 0)] = 1;
+        a[(0, 1)] = 2;
+        a[(1, 0)] = 2;
+        a[(1, 1)] = 4;
+        assert!(a.is_symmetric());
+    }
 }
