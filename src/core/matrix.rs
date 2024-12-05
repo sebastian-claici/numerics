@@ -72,76 +72,6 @@ where
     }
 }
 
-impl Matrix<f32> {
-    pub fn zeros(n_rows: usize, n_cols: usize) -> Self {
-        let data = (0..n_cols * n_rows).map(|_| 0.0).collect();
-
-        Self {
-            n_rows,
-            n_cols,
-            data,
-        }
-    }
-
-    pub fn ones(n_rows: usize, n_cols: usize) -> Self {
-        let data = (0..n_cols * n_rows).map(|_| 1.0).collect();
-
-        Self {
-            n_rows,
-            n_cols,
-            data,
-        }
-    }
-
-    pub fn eye(n: usize) -> Self {
-        let mut data = Vec::with_capacity(n * n);
-        (0..n * n).map(|i| (i / n, i % n)).for_each(|(i, j)| {
-            data.push(if i == j { 1.0 } else { 0.0 });
-        });
-
-        Self {
-            n_rows: n,
-            n_cols: n,
-            data,
-        }
-    }
-}
-
-impl Matrix<f64> {
-    pub fn zeros(n_rows: usize, n_cols: usize) -> Self {
-        let data = (0..n_cols * n_rows).map(|_| 0.0).collect();
-
-        Self {
-            n_rows,
-            n_cols,
-            data,
-        }
-    }
-
-    pub fn ones(n_rows: usize, n_cols: usize) -> Self {
-        let data = (0..n_cols * n_rows).map(|_| 1.0).collect();
-
-        Self {
-            n_rows,
-            n_cols,
-            data,
-        }
-    }
-
-    pub fn eye(n: usize) -> Self {
-        let mut data = Vec::with_capacity(n * n);
-        (0..n * n).map(|i| (i / n, i % n)).for_each(|(i, j)| {
-            data.push(if i == j { 1.0 } else { 0.0 });
-        });
-
-        Self {
-            n_rows: n,
-            n_cols: n,
-            data,
-        }
-    }
-}
-
 impl<T> Index<(usize, usize)> for Matrix<T> {
     type Output = T;
 
@@ -270,6 +200,72 @@ where
     }
 }
 
+macro_rules! matrix_zeros {
+    ($type:ty) => {
+        impl Matrix<$type> {
+            pub fn zeros(n_rows: usize, n_cols: usize) -> Self {
+                let data = (0..n_cols * n_rows).map(|_| 0 as $type).collect();
+
+                Self {
+                    n_rows,
+                    n_cols,
+                    data,
+                }
+            }
+        }
+    };
+}
+
+macro_rules! matrix_ones {
+    ($type:ty) => {
+        impl Matrix<$type> {
+            pub fn ones(n_rows: usize, n_cols: usize) -> Self {
+                let data = (0..n_cols * n_rows).map(|_| 1 as $type).collect();
+
+                Self {
+                    n_rows,
+                    n_cols,
+                    data,
+                }
+            }
+        }
+    };
+}
+
+macro_rules! matrix_eye {
+    ($type:ty) => {
+        impl Matrix<$type> {
+            pub fn eye(n: usize) -> Self {
+                let mut data = Vec::with_capacity(n * n);
+                (0..n * n).map(|i| (i / n, i % n)).for_each(|(i, j)| {
+                    data.push(if i == j { 1 as $type } else { 0 as $type });
+                });
+
+                Self {
+                    n_rows: n,
+                    n_cols: n,
+                    data,
+                }
+            }
+        }
+    };
+}
+
+matrix_zeros!(f32);
+matrix_zeros!(f64);
+matrix_zeros!(i32);
+matrix_zeros!(i64);
+
+matrix_ones!(f32);
+matrix_ones!(f64);
+matrix_ones!(i32);
+matrix_ones!(i64);
+
+matrix_eye!(f32);
+matrix_eye!(f64);
+matrix_eye!(i32);
+matrix_eye!(i64);
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -334,5 +330,41 @@ mod test {
         a[(1, 0)] = 2;
         a[(1, 1)] = 4;
         assert!(a.is_symmetric());
+    }
+
+    #[test]
+    fn test_zeros() {
+        let z_i32 = Matrix::<i32>::zeros(3, 3);
+        let i_f32 = Matrix::<i64>::eye(3);
+
+        for i in 0..3 {
+            for j in 0..3 {
+                assert_eq!(z_i32[(i, j)], 0);
+            }
+        }
+    }
+
+    #[test]
+    fn test_ones() {
+        let o_i64 = Matrix::<i64>::ones(3, 3);
+        for i in 0..3 {
+            for j in 0..3 {
+                assert_eq!(o_i64[(i, j)], 1);
+            }
+        }
+    }
+
+    #[test]
+    fn test_eye() {
+        let i_f64 = Matrix::<f64>::eye(3);
+        for i in 0..3 {
+            for j in 0..3 {
+                if i == j {
+                    assert_eq!(i_f64[(i, j)], 1.0);
+                } else {
+                    assert_eq!(i_f64[(i, j)], 0.0);
+                }
+            }
+        }
     }
 }
