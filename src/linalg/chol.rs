@@ -1,4 +1,5 @@
 use crate::core::error::NotPositiveDefiniteError;
+use crate::core::matrix::matrix;
 use crate::core::matrix::Matrix;
 
 #[derive(Debug)]
@@ -23,7 +24,7 @@ macro_rules! impl_cholesky {
                 let n = self.n_rows;
                 let mut chol_l = Matrix::new(n, n);
                 // assumes A is square and positive semi-definite
-                for i in 1..n {
+                for i in 0..n {
                     let mut diag = self[(i, i)];
                     for k in 0..i {
                         diag -= chol_l[(i, k)] * chol_l[(i, k)];
@@ -56,5 +57,28 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_cholesky() {}
+    fn test_cholesky() {
+        let m: Matrix<f32> = matrix![4.0, 12.0, -16.0; 12.0, 37.0, -43.0; -16.0, -43.0, 98.0];
+
+        let chol = m.cholesky();
+        assert!(chol.is_ok());
+
+        let chol = chol.unwrap();
+    }
+
+    #[test]
+    fn test_cholesky_non_symmetric() {
+        let m: Matrix<f32> = matrix![1.0, 1.0; 0.0, 1.0];
+
+        let chol = m.cholesky();
+        assert!(chol.is_err());
+    }
+
+    #[test]
+    fn test_cholesky_non_pd() {
+        let m: Matrix<f32> = matrix![-1.0, 0.0; 0.0, 1.0];
+
+        let chol = m.cholesky();
+        assert!(chol.is_err());
+    }
 }
