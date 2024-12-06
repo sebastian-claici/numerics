@@ -294,6 +294,8 @@ macro_rules! matrix {
     };
 }
 
+pub(crate) use matrix;
+
 #[cfg(test)]
 mod test {
     use super::*;
