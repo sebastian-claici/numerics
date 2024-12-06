@@ -266,6 +266,34 @@ matrix_eye!(f64);
 matrix_eye!(i32);
 matrix_eye!(i64);
 
+#[macro_export]
+macro_rules! matrix {
+    ($($($e:expr),*);*) => {
+{
+            let mut data = Vec::new();
+            let mut n_cols = None;
+
+            $(
+                let row = vec![$($e),*];
+                if let Some(cols) = n_cols {
+                    assert_eq!(cols, row.len(), "All rows must have the same number of columns");
+                } else {
+                    n_cols = Some(row.len());
+                }
+                data.extend(row);
+            )*
+
+            let n_cols = n_cols.unwrap();
+            let n_rows = data.len() / n_cols;
+            Matrix {
+                n_rows,
+                n_cols,
+                data,
+            }
+        }
+    };
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -335,7 +363,6 @@ mod test {
     #[test]
     fn test_zeros() {
         let z_i32 = Matrix::<i32>::zeros(3, 3);
-        let i_f32 = Matrix::<i64>::eye(3);
 
         for i in 0..3 {
             for j in 0..3 {
@@ -366,5 +393,20 @@ mod test {
                 }
             }
         }
+    }
+
+    #[test]
+    fn test_matrix_macro() {
+        let m = matrix![1, 2, 3; 4, 5, 6];
+
+        assert_eq!(m.n_rows, 2);
+        assert_eq!(m.n_cols, 3);
+
+        assert_eq!(m[(0, 0)], 1);
+        assert_eq!(m[(0, 1)], 2);
+        assert_eq!(m[(0, 2)], 3);
+        assert_eq!(m[(1, 0)], 4);
+        assert_eq!(m[(1, 1)], 5);
+        assert_eq!(m[(1, 2)], 6);
     }
 }
