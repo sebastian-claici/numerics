@@ -1,21 +1,14 @@
 use crate::core::error::NotPositiveDefiniteError;
 use crate::core::matrix::*;
 
-#[derive(Debug)]
-pub struct Cholesky<T> {
-    pub chol_l: Matrix<T>,
-}
-
-impl<T> Cholesky<T> {
-    pub fn new(chol_l: Matrix<T>) -> Self {
-        Self { chol_l }
-    }
+pub(crate) trait Cholesky<T> {
+    fn chol(&self) -> Result<Matrix<T>, NotPositiveDefiniteError>;
 }
 
 macro_rules! impl_cholesky {
     ($type:ty) => {
-        impl Matrix<$type> {
-            pub fn cholesky(&self) -> Result<Cholesky<$type>, NotPositiveDefiniteError> {
+        impl Cholesky<$type> for Matrix<$type> {
+            fn chol(&self) -> Result<Matrix<$type>, NotPositiveDefiniteError> {
                 if !self.is_symmetric() {
                     return Err(NotPositiveDefiniteError);
                 }
@@ -42,7 +35,7 @@ macro_rules! impl_cholesky {
                     }
                 }
 
-                Ok(Cholesky::new(chol_l))
+                Ok(chol_l)
             }
         }
     };
@@ -60,26 +53,26 @@ mod test {
     fn test_cholesky() {
         let m: Matrix<f32> = matrix![4.0, 12.0, -16.0; 12.0, 37.0, -43.0; -16.0, -43.0, 98.0];
 
-        let chol = m.cholesky();
+        let chol = m.chol();
         assert!(chol.is_ok());
 
         let chol = chol.unwrap();
-        assert_relative_eq!(chol.chol_l[(0, 0)], 2.0);
-        assert_relative_eq!(chol.chol_l[(1, 0)], 6.0);
-        assert_relative_eq!(chol.chol_l[(2, 0)], -8.0);
-        assert_relative_eq!(chol.chol_l[(0, 1)], 0.0);
-        assert_relative_eq!(chol.chol_l[(1, 1)], 1.0);
-        assert_relative_eq!(chol.chol_l[(2, 1)], 5.0);
-        assert_relative_eq!(chol.chol_l[(0, 2)], 0.0);
-        assert_relative_eq!(chol.chol_l[(1, 2)], 0.0);
-        assert_relative_eq!(chol.chol_l[(2, 2)], 3.0);
+        assert_relative_eq!(chol[(0, 0)], 2.0);
+        assert_relative_eq!(chol[(1, 0)], 6.0);
+        assert_relative_eq!(chol[(2, 0)], -8.0);
+        assert_relative_eq!(chol[(0, 1)], 0.0);
+        assert_relative_eq!(chol[(1, 1)], 1.0);
+        assert_relative_eq!(chol[(2, 1)], 5.0);
+        assert_relative_eq!(chol[(0, 2)], 0.0);
+        assert_relative_eq!(chol[(1, 2)], 0.0);
+        assert_relative_eq!(chol[(2, 2)], 3.0);
     }
 
     #[test]
     fn test_cholesky_non_symmetric() {
         let m: Matrix<f32> = matrix![1.0, 1.0; 0.0, 1.0];
 
-        let chol = m.cholesky();
+        let chol = m.chol();
         assert!(chol.is_err());
     }
 
@@ -87,7 +80,7 @@ mod test {
     fn test_cholesky_non_pd() {
         let m: Matrix<f32> = matrix![-1.0, 0.0; 0.0, 1.0];
 
-        let chol = m.cholesky();
+        let chol = m.chol();
         assert!(chol.is_err());
     }
 }
