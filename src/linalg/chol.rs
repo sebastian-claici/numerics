@@ -1,16 +1,17 @@
-use crate::core::error::NotPositiveDefiniteError;
+use crate::core::error::CholDecompositionError;
+use crate::core::error::CholDecompositionError::{NotPositiveDefiniteError, NotSymmetricError};
 use crate::core::matrix::*;
 
 pub(crate) trait Cholesky<T> {
-    fn chol(&self) -> Result<Matrix<T>, NotPositiveDefiniteError>;
+    fn chol(&self) -> Result<Matrix<T>, CholDecompositionError>;
 }
 
 macro_rules! impl_cholesky {
     ($type:ty) => {
         impl Cholesky<$type> for Matrix<$type> {
-            fn chol(&self) -> Result<Matrix<$type>, NotPositiveDefiniteError> {
+            fn chol(&self) -> Result<Matrix<$type>, CholDecompositionError> {
                 if !self.is_symmetric() {
-                    return Err(NotPositiveDefiniteError);
+                    return Err(NotSymmetricError);
                 }
 
                 let n = self.n_rows;
@@ -46,6 +47,8 @@ impl_cholesky!(f64);
 
 #[cfg(test)]
 mod test {
+    use crate::core::gemm::gemm;
+
     use super::*;
     use approx::assert_relative_eq;
 
@@ -66,6 +69,15 @@ mod test {
         assert_relative_eq!(chol[(0, 2)], 0.0);
         assert_relative_eq!(chol[(1, 2)], 0.0);
         assert_relative_eq!(chol[(2, 2)], 3.0);
+
+        let m_rec = gemm(&chol, &chol.transpose());
+        assert_eq!(m_rec.n_rows, m.n_rows);
+        assert_eq!(m_rec.n_cols, m.n_cols);
+        for i in 0..m_rec.n_rows {
+            for j in 0..m_rec.n_cols {
+                assert_relative_eq!(m_rec[(i, j)], m[(i, j)]);
+            }
+        }
     }
 
     #[test]
@@ -74,6 +86,7 @@ mod test {
 
         let chol = m.chol();
         assert!(chol.is_err());
+        assert_eq!(chol.unwrap_err(), NotSymmetricError);
     }
 
     #[test]
@@ -82,5 +95,6 @@ mod test {
 
         let chol = m.chol();
         assert!(chol.is_err());
+        assert_eq!(chol.unwrap_err(), NotPositiveDefiniteError);
     }
 }

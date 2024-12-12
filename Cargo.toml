@@ -13,3 +13,4 @@ harness = false
 [dependencies]
 approx = "0.5.1"
 rand = "0.8.5"
+thiserror = "2.0.6"

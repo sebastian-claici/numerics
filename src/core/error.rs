@@ -1,10 +1,15 @@
-use std::fmt::Display;
+use thiserror::Error;
 
-#[derive(Debug, Clone)]
-pub struct NotPositiveDefiniteError;
+#[derive(Error, Debug, PartialEq)]
+pub enum CholDecompositionError {
+    #[error("matrix is not symmetric")]
+    NotSymmetricError,
+    #[error("matrix is not positive definite")]
+    NotPositiveDefiniteError,
+}
 
-impl Display for NotPositiveDefiniteError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Matrix is not positive definite.")
-    }
+#[derive(Error, Debug, PartialEq)]
+pub enum LUDecompositionError {
+    #[error("LU decomposition is only implemented for square matrices")]
+    NotSquareError,
 }
