@@ -21,6 +21,13 @@ where
 
         Self { n, data }
     }
+
+    pub fn from_vec(data: &Vec<T>) -> Self {
+        Self {
+            n: data.len(),
+            data: data.clone(),
+        }
+    }
 }
 
 impl<T> Index<usize> for Vector<T> {
