@@ -22,10 +22,15 @@ where
         Self { n, data }
     }
 
-    pub fn from_vec(data: &Vec<T>) -> Self {
+    pub fn from_vec(data: &[T]) -> Self {
+        let mut vec_data = Vec::with_capacity(data.len());
+        for x in data {
+            vec_data.push(*x);
+        }
+
         Self {
             n: data.len(),
-            data: data.clone(),
+            data: vec_data,
         }
     }
 }

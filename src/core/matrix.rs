@@ -294,6 +294,7 @@ macro_rules! matrix {
     };
 }
 
+#[allow(unused_imports)]
 pub(crate) use matrix;
 
 #[cfg(test)]
