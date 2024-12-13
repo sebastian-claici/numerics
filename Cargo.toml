@@ -1,0 +1,16 @@
+[package]
+name = "numerics"
+version = "0.1.0"
+edition = "2021"
+
+[dev-dependencies]
+divan = "0.1.16"
+
+[[bench]]
+name = "matmul"
+harness = false
+
+[dependencies]
+approx = "0.5.1"
+rand = "0.8.5"
+thiserror = "2.0.6"
