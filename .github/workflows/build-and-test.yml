@@ -66,9 +66,3 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
