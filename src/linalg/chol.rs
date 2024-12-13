@@ -6,6 +6,7 @@ pub(crate) trait Cholesky<T> {
     fn chol(&self) -> Result<Matrix<T>, CholDecompositionError>;
 }
 
+#[macro_export]
 macro_rules! impl_cholesky {
     ($type:ty) => {
         impl Cholesky<$type> for Matrix<$type> {

@@ -6,6 +6,7 @@ pub(crate) trait LU<T> {
     fn lu(&self) -> Result<(Matrix<T>, Matrix<T>), LUDecompositionError>;
 }
 
+#[macro_export]
 macro_rules! impl_lu {
     ($type:ty) => {
         impl LU<$type> for Matrix<$type> {
